@@ -9,7 +9,6 @@ import {
 	Settings,
 	LayoutDashboard,
 } from "lucide-react";
-import DashboardCard from "./Site/DashboardCard";
 
 const Sidebar = () => {
 	const [expanded, setExpanded] = useState(false);
