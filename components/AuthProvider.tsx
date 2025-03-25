@@ -1,7 +1,6 @@
 "use client";
-
 import { createContext, useContext, useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut, User } from "firebase/auth";
 import { setCookie, deleteCookie } from "cookies-next";
 import { app } from "../lib/firebase";
 import { usePathname, useRouter } from "next/navigation";
@@ -9,13 +8,31 @@ import LoadingSpinner from "./ui/LoadingSpinner";
 
 const auth = getAuth(app);
 
-const AuthContext = createContext<{ user: User | null }>({ user: null });
+const AuthContext = createContext<{
+	user: User | null;
+	logout: () => Promise<void>; // ✅ Added logout function
+}>({
+	user: null,
+	logout: async () => {}, // Placeholder
+});
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const [user, setUser] = useState<User | null>(null);
 	const [loading, setLoading] = useState(true);
 	const router = useRouter();
 	const pathname = usePathname();
+
+	// ✅ Function to log out the user
+	const logout = async () => {
+		try {
+			await signOut(auth);
+			deleteCookie("firebaseAuthToken");
+			setUser(null);
+			router.push("/login"); // Redirect to login after logout
+		} catch (error) {
+			console.error("Logout failed:", error);
+		}
+	};
 
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -24,16 +41,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 			if (user) {
 				const token = await user.getIdToken();
-				setCookie("firebaseAuthToken", token, { maxAge: 60 * 60 * 24, path: "/" });
+				setCookie("firebaseAuthToken", token, {
+					maxAge: 60 * 60 * 24,
+					path: "/",
+				});
 
 				if (pathname === "/login") {
 					router.replace("/dashboard");
 				}
 			} else {
 				deleteCookie("firebaseAuthToken");
-
-				const protectedRoutes = ["/dashboard", "/dashboard/analytics", "/dashboard/products","/dashboard/contactus"];
-				if (protectedRoutes.includes(pathname)) {
+				if (pathname.startsWith("/dashboard")) {
 					router.replace("/login");
 				}
 			}
@@ -46,7 +64,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		return <LoadingSpinner />;
 	}
 
-	return <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>;
+	return (
+		<AuthContext.Provider value={{ user, logout }}>
+			{children}
+		</AuthContext.Provider>
+	);
 };
 
 export const useAuth = () => {

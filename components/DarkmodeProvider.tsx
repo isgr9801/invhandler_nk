@@ -1,4 +1,4 @@
-"use client"; // ✅ Ensure this runs only on the client side
+"use client";
 
 import { useEffect } from "react";
 
@@ -12,5 +12,5 @@ export default function DarkModeProvider() {
 		}
 	}, []);
 
-	return null; // No UI, just applies the dark class
+	return null;
 }
