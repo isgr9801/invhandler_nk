@@ -33,19 +33,12 @@ const Page = () => {
 				>
 					dashboard
 				</a>
-				<> / </>
-				<a
-					href="/dashboard/analytics"
-					className="text-text-base font-semibold text-blue-600 underline dark:text-blue-500 hover:no-underline cursor-pointer"
-				>
-					analytics
-				</a>
 			</div>
 			<div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white p-4 sm:p-6">
 				<div className="flex flex-col md:flex-row gap-6 mt-2">
 					{/* upload and insert regular price sheet CSV */}
 					<div className="w-full md:w-1/2 lg:max-w-lg p-4 bg-gray-100 dark:bg-gray-800 shadow rounded-lg">
-						<h3 className="text-lg font-semibold">Search here anything</h3>
+						<h3 className="text-lg font-semibold">Search something here</h3>
 
 						<div className="flex justify-center mt-6">
 							<input
@@ -60,7 +53,7 @@ const Page = () => {
 								}}
 								className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-8 rounded-full transition transform hover:scale-105"
 							>
-								Upload CSV
+								search
 							</button>
 						</div>
 					</div>
